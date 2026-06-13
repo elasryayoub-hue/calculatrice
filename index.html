@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Calculatrice</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  body {
+    background: #1c1c1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .calculator {
+    width: 100%;
+    max-width: 360px;
+    padding: 16px;
+  }
+
+  .display {
+    background: #1c1c1e;
+    color: white;
+    text-align: right;
+    padding: 30px 16px;
+    font-size: 48px;
+    word-wrap: break-word;
+    word-break: break-all;
+    min-height: 100px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  button {
+    border: none;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    font-size: 28px;
+    color: white;
+    background: #333333;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  button:active {
+    opacity: 0.6;
+  }
+
+  .operator {
+    background: #ff9500;
+  }
+
+  .function {
+    background: #a5a5a5;
+    color: black;
+  }
+
+  .zero {
+    grid-column: span 2;
+    border-radius: 40px;
+    aspect-ratio: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="display" id="display">0</div>
+  <div class="buttons">
+    <button class="function" onclick="clearAll()">AC</button>
+    <button class="function" onclick="toggleSign()">+/-</button>
+    <button class="function" onclick="percent()">%</button>
+    <button class="operator" onclick="chooseOperator('÷')">÷</button>
+
+    <button onclick="appendNumber('7')">7</button>
+    <button onclick="appendNumber('8')">8</button>
+    <button onclick="appendNumber('9')">9</button>
+    <button class="operator" onclick="chooseOperator('×')">×</button>
+
+    <button onclick="appendNumber('4')">4</button>
+    <button onclick="appendNumber('5')">5</button>
+    <button onclick="appendNumber('6')">6</button>
+    <button class="operator" onclick="chooseOperator('-')">-</button>
+
+    <button onclick="appendNumber('1')">1</button>
+    <button onclick="appendNumber('2')">2</button>
+    <button onclick="appendNumber('3')">3</button>
+    <button class="operator" onclick="chooseOperator('+')">+</button>
+
+    <button class="zero" onclick="appendNumber('0')">0</button>
+    <button onclick="appendNumber('.')">.</button>
+    <button class="operator" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<script>
+  let current = '0';
+  let previous = null;
+  let operator = null;
+  let resetNext = false;
+
+  const display = document.getElementById('display');
+
+  function updateDisplay() {
+    display.textContent = current;
+  }
+
+  function appendNumber(num) {
+    if (resetNext) {
+      current = '0';
+      resetNext = false;
+    }
+    if (num === '.' && current.includes('.')) return;
+    if (current === '0' && num !== '.') {
+      current = num;
+    } else {
+      current += num;
+    }
+    updateDisplay();
+  }
+
+  function chooseOperator(op) {
+    if (operator !== null) calculate();
+    previous = current;
+    operator = op;
+    resetNext = true;
+  }
+
+  function calculate() {
+    if (operator === null || previous === null) return;
+    const a = parseFloat(previous);
+    const b = parseFloat(current);
+    let result = 0;
+
+    switch (operator) {
+      case '+': result = a + b; break;
+      case '-': result = a - b; break;
+      case '×': result = a * b; break;
+      case '÷': result = b !== 0 ? a / b : 'Erreur'; break;
+    }
+
+    current = result.toString();
+    operator = null;
+    previous = null;
+    resetNext = true;
+    updateDisplay();
+  }
+
+  function clearAll() {
+    current = '0';
+    previous = null;
+    operator = null;
+    resetNext = false;
+    updateDisplay();
+  }
+
+  function toggleSign() {
+    if (current !== '0') {
+      current = current.startsWith('-') ? current.slice(1) : '-' + current;
+      updateDisplay();
+    }
+  }
+
+  function percent() {
+    current = (parseFloat(current) / 100).toString();
+    updateDisplay();
+  }
+</script>
+
+</body>
+</html>
