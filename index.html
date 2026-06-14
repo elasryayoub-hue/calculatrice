@@ -181,6 +181,11 @@
     current = (parseFloat(current) / 100).toString();
     updateDisplay();
   }
+  if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js');
+  });
+  }
 </script>
 
 </body>
